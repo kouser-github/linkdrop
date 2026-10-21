@@ -1,0 +1,12 @@
+<resources>
+    <style name="Theme.LinkDrop" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#A8C7FA</item>
+        <item name="colorOnPrimary">#062E6F</item>
+        <item name="colorPrimaryContainer">#0842A0</item>
+        <item name="colorOnPrimaryContainer">#D3E3FD</item>
+        <item name="colorSecondaryContainer">#3E4759</item>
+        <item name="colorSurface">#111318</item>
+        <item name="colorSurfaceVariant">#44474E</item>
+        <item name="android:colorBackground">#111318</item>
+    </style>
+</resources>

@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_save_all" android:title="Save all" app:showAsAction="never" />
+    <item android:id="@+id/action_delete_all" android:title="Delete all received" app:showAsAction="never" />
+    <item android:id="@+id/action_clear" android:title="Clear finished" app:showAsAction="never" />
+    <item android:id="@+id/action_pause" android:title="Pause receiving" android:checkable="true" app:showAsAction="never" />
+    <item android:id="@+id/action_folder" android:title="Choose save folder" app:showAsAction="never" />
+    <item android:id="@+id/action_address" android:title="Laptop address" app:showAsAction="never" />
+    <item android:id="@+id/action_about" android:title="About LinkDrop" app:showAsAction="never" />
+</menu>
