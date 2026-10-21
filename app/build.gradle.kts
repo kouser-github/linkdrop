@@ -3,14 +3,31 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 android {
-    namespace = "com.linkdrop.app"
+    namespace = "com.sentrocx.app"
     compileSdk = 34
     defaultConfig {
-        applicationId = "com.linkdrop.app"
+        applicationId = "com.sentrocx.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 3
-        versionName = "2.0"
+        versionCode = 4
+        versionName = "3.0"
+    }
+    signingConfigs {
+        create("release") {
+            val ks = System.getenv("KEYSTORE_PATH")
+            if (ks != null) {
+                storeFile = file(ks)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+        }
     }
     buildFeatures { viewBinding = true }
     compileOptions {

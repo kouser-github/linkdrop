@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.LinkDrop" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.SentRocx" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">#A8C7FA</item>
         <item name="colorOnPrimary">#062E6F</item>
         <item name="colorPrimaryContainer">#0842A0</item>
