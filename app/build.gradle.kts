@@ -4,7 +4,7 @@ plugins {
     kotlin("kapt")
 }
 android {
-    namespace = "com.sentrocx.app"
+    namespace = "com.linkdrop.app"
     compileSdk = 34
     defaultConfig {
         applicationId = "com.sentrocx.app"
