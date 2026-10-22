@@ -5,7 +5,8 @@
     <item android:id="@+id/action_pause" android:title="Pause receiving" android:checkable="true" app:showAsAction="never" />
     <item android:id="@+id/action_folder" android:title="Choose save folder" app:showAsAction="never" />
     <item android:id="@+id/action_pair" android:title="Pair with laptop" app:showAsAction="never" />
-    <item android:id="@+id/action_forget" android:title="Forget paired laptop" app:showAsAction="never" />
+    <item android:id="@+id/action_laptops" android:title="Saved laptops" app:showAsAction="never" />
     <item android:id="@+id/action_address" android:title="Laptop address" app:showAsAction="never" />
+    <item android:id="@+id/action_stop" android:title="Stop" app:showAsAction="never" />
     <item android:id="@+id/action_about" android:title="About SentRocx" app:showAsAction="never" />
 </menu>

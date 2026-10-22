@@ -12,6 +12,7 @@ import java.net.InetAddress
 import java.net.URL
 
 class CancelledException : Exception()
+class UnpairedException : IOException("Removed by laptop")
 
 fun fmtBytes(n: Long): String {
     if (n < 1024) return "$n B"
@@ -26,19 +27,46 @@ class Found(val base: String, val id: String)
 class Call(val c: HttpURLConnection, val nonce: String)
 
 object Net {
-    /** Shouts on the Wi-Fi; the laptop answers with its port and id. */
-    fun discover(): Found? = try {
-        DatagramSocket().use { s ->
-            s.broadcast = true
-            s.soTimeout = 1500
-            val msg = "SENTROCX?".toByteArray()
-            s.send(DatagramPacket(msg, msg.size, InetAddress.getByName("255.255.255.255"), 41234))
-            val p = DatagramPacket(ByteArray(96), 96)
-            s.receive(p)
-            val parts = String(p.data, 0, p.length).trim().split(":")
-            if (parts.size >= 2 && parts[0] == "SENTROCX") Found("http://${p.address.hostAddress}:${parts[1]}", parts.getOrElse(2) { "" }) else null
+    @Volatile private var discoverySocket: DatagramSocket? = null
+
+    fun stopDiscovery() {
+        try { discoverySocket?.close() } catch (e: Exception) { }
+    }
+
+    /** Shouts on the Wi-Fi; returns first answering laptop. */
+    fun discover(): Found? = discoverAll().firstOrNull()
+
+    /** Shouts on the Wi-Fi; collects answering laptops on the LAN. */
+    fun discoverAll(): List<Found> {
+        val found = LinkedHashMap<String, Found>()
+        try {
+            DatagramSocket().use { s ->
+                discoverySocket = s
+                s.broadcast = true
+                s.soTimeout = 600
+                val msg = "SENTROCX?".toByteArray()
+                s.send(DatagramPacket(msg, msg.size, InetAddress.getByName("255.255.255.255"), 41234))
+                val end = System.currentTimeMillis() + 1200
+                while (System.currentTimeMillis() < end) {
+                    try {
+                        val p = DatagramPacket(ByteArray(96), 96)
+                        s.receive(p)
+                        val parts = String(p.data, 0, p.length).trim().split(":")
+                        if (parts.size >= 2 && parts[0] == "SENTROCX") {
+                            val base = "http://${p.address.hostAddress}:${parts[1]}"
+                            val id = parts.getOrElse(2) { "" }
+                            found[id.ifEmpty { base }] = Found(base, id)
+                        }
+                    } catch (e: Exception) {
+                        break
+                    }
+                }
+            }
+        } catch (e: Exception) { } finally {
+            discoverySocket = null
         }
-    } catch (e: Exception) { null }
+        return found.values.toList()
+    }
 
     fun normalize(a: String): String {
         var s = a.trim().trimEnd('/')
@@ -92,12 +120,20 @@ object Net {
                 c.setRequestProperty("Content-Type", "application/octet-stream")
                 c.outputStream.use { it.write(Crypto.seal(l.enc, json.toString(), "req\n${k.nonce}")) }
             }
+            if (c.responseCode == 401) throw UnpairedException()
             if (c.responseCode !in 200..299) throw IOException("HTTP ${c.responseCode}")
             return Crypto.open(l.enc, c.inputStream.readBytes(), "res\n${k.nonce}")
         } finally { c.disconnect() }
     }
 
-    fun ping(l: Link, laptopId: String): Boolean = try { JSONObject(call(l, "GET", "/api/info")).optString("id") == laptopId } catch (e: Exception) { false }
+    @Throws(UnpairedException::class)
+    fun ping(l: Link, laptopId: String): Boolean = try {
+        JSONObject(call(l, "GET", "/api/info")).optString("id") == laptopId
+    } catch (e: UnpairedException) {
+        throw e
+    } catch (e: Exception) {
+        false
+    }
 }
 
 /** One pairing attempt: ECDH, commit-then-reveal, and a 6-digit code you compare on both screens. */
@@ -150,6 +186,7 @@ object Transfer {
             val k = Net.open(l, "/api/outbox/${item.id}/download")
             val c = k.c
             conn = c
+            if (c.responseCode == 401) throw UnpairedException()
             if (c.responseCode != 200) throw IOException("Laptop said HTTP ${c.responseCode}")
             val meter = Meter(item)
             val total = c.inputStream.use { inp ->
@@ -201,6 +238,7 @@ object Transfer {
                 c.outputStream.use { out -> Crypto.encryptStream(inp, out, l.enc, id, "u", item.cancel) { meter.update(it) } }
             }
             val code = c.responseCode
+            if (code == 401) throw UnpairedException()
             if (code !in 200..299) throw IOException("Laptop said HTTP $code")
             item.done = maxOf(item.done, item.size); item.status = St.DONE
         } catch (e: CancelledException) {

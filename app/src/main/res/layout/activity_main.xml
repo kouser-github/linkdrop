@@ -20,6 +20,30 @@
                     android:layout_weight="1" android:textAppearance="?attr/textAppearanceBodyLarge" />
                 <Button android:id="@+id/btnAddr" style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Address" />
+                <Button android:id="@+id/btnStop" style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Stop" android:textColor="?attr/colorError" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView style="@style/Widget.Material3.CardView.Filled"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="12dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:text="Saved laptops"
+                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+                    <Button android:id="@+id/btnPairNew" style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pair" />
+                </LinearLayout>
+                <TextView android:id="@+id/savedEmpty" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:paddingTop="4dp" android:paddingBottom="4dp"
+                    android:text="No saved laptops yet. Tap Pair to add one."
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+                <LinearLayout android:id="@+id/savedList" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:orientation="vertical" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
